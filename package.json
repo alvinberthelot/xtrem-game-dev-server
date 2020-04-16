@@ -1,0 +1,21 @@
+{
+  "name": "xtreme-game-dev-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alvinberthelot/xtreme-game-dev-server.git"
+  },
+  "keywords": [],
+  "author": "Alvin Berthelot",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alvinberthelot/xtreme-game-dev-server/issues"
+  },
+  "homepage": "https://github.com/alvinberthelot/xtreme-game-dev-server#readme",
+  "dependencies": {}
+}
