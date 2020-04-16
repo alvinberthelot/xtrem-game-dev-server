@@ -1,7 +1,8 @@
 import { httpListener } from "@marblejs/core"
-import { api$ } from "./api.effects"
+import { logger$ } from "./middleware/logger.middleware"
+import { api$ } from "./api/api.effects"
 
-const middlewares = []
+const middlewares = [logger$]
 
 const effects = [api$]
 
