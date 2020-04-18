@@ -1,5 +1,5 @@
 import { r } from "@marblejs/core"
-import { mapTo, tap } from "rxjs/operators"
+import { mapTo, tap, map } from "rxjs/operators"
 import Store from "../../state/store"
 import { FinishGameAction } from "../../state/actions/game.action"
 
@@ -8,8 +8,9 @@ export const stop$ = r.pipe(
   r.matchType("GET"),
   r.useEffect((req$) =>
     req$.pipe(
-      tap(() => {
-        Store.changeState(new FinishGameAction())
+      map((req) => req.params),
+      tap((params: any) => {
+        Store.changeState(new FinishGameAction(params))
       }),
       mapTo({ body: `Game finished !` })
     )

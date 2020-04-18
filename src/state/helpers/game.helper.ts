@@ -7,7 +7,9 @@ export function createGame(): Game {
   return {
     id: generateRandomString(GAME_ID_LENGTH),
     isStarted: false,
+    dateStart: null,
     isPaused: false,
     isFinished: false,
+    dateFinish: null,
   }
 }

@@ -24,6 +24,7 @@
     "@marblejs/core": "3.0.2",
     "cross-fetch": "3.0.4",
     "fp-ts": "2.5.3",
+    "moment": "2.24.0",
     "rxjs": "6.5.5"
   },
   "devDependencies": {

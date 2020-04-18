@@ -1,19 +1,32 @@
-import { Action, TypeAction } from "./action"
+import { Action } from "./action"
+import { Payload, PayloadId } from "../model/payload.model"
 
-export class StartGameAction extends Action {
-  constructor() {
-    super(TypeAction.StartGame)
+export class InitStateAction implements Action {
+  payload: Payload
+  constructor(payload: Payload) {
+    this.payload = payload
   }
 }
 
-export class FinishGameAction extends Action {
-  constructor() {
-    super(TypeAction.FinishGame)
+export class InitGameAction implements Action {}
+
+export class StartGameAction implements Action {
+  payload: PayloadId
+  constructor(payload: PayloadId) {
+    this.payload = payload
   }
 }
 
-export class PauseGameAction extends Action {
-  constructor() {
-    super(TypeAction.PauseGame)
+export class FinishGameAction implements Action {
+  payload: PayloadId
+  constructor(payload: PayloadId) {
+    this.payload = payload
+  }
+}
+
+export class PauseGameAction implements Action {
+  payload: PayloadId
+  constructor(payload: PayloadId) {
+    this.payload = payload
   }
 }

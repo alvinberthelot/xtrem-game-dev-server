@@ -4,7 +4,9 @@ import { listener } from "./http.listener"
 import { scheduler } from "./scheduler/scheduler"
 import Store from "./state/store"
 import { of, combineLatest } from "rxjs"
-import { filter } from "rxjs/operators"
+import { tap } from "rxjs/operators"
+import { InitStateAction } from "./state/actions/state.action"
+import { Payload } from "./state/model/payload.model"
 
 const server = createServer({
   port: 1337,
@@ -17,23 +19,36 @@ const apiServer: IO<void> = async () =>
 
 apiServer()
 
+Store.changeState(new InitStateAction(new Payload()))
+
 const state$ = of(Store.getState())
 const scheduler$ = scheduler()
 
 combineLatest([state$, scheduler$])
   .pipe(
-    filter(([state, scheduler]) => state.game.isStarted),
-    filter(([state, scheduler]) => !state.game.isPaused),
-    filter(([state, scheduler]) => !state.game.isFinished)
+    tap(([state, scheduler]) => {
+      const games = Object.values(state.games)
+      games
+        .filter((game) => game.isStarted)
+        .filter((game) => !game.isPaused)
+        .filter((game) => !game.isFinished)
+        .forEach((game) => {
+          console.log(`Game #${game.id}`)
+        })
+    })
   )
   .subscribe(
-    (data) => {
-      console.log("DATA", data)
+    () => {
+      console.log(".")
     },
     (error) => {
-      console.log("ERROR", error)
+      console.error("ERROR", error)
     },
     () => {
-      console.log("COMPLETE")
+      console.log(`
+        -_-_-_-_-_-_-_-_-_-_-_-_
+        COMPLETE !
+        -_-_-_-_-_-_-_-_-_-_-_-_
+      `)
     }
   )

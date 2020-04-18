@@ -1,15 +1,20 @@
 import { State } from "./model/state.model"
 import { createGame } from "./helpers/game.helper"
-import { Action, TypeAction } from "./actions/action"
+import { Action } from "./actions/action"
+import {
+  InitGameAction,
+  StartGameAction,
+  FinishGameAction,
+  PauseGameAction,
+} from "./actions/game.action"
+import { InitStateAction } from "./actions/state.action"
 
 export default class Store {
   private static instance: State
 
   static getState() {
     if (!Store.instance) {
-      Store.instance = {
-        game: createGame(),
-      }
+      // Store.instance = {}
     }
 
     return Store.instance
@@ -18,24 +23,41 @@ export default class Store {
   static changeState(action: Action) {
     const state = Store.getState()
 
-    switch (action.type) {
-      case TypeAction.StartGame: {
-        console.log("START")
-        state.game.isStarted = true
+    switch (action.constructor) {
+      case InitStateAction: {
+        const { date } = (<InitStateAction>action).payload
+        Store.instance = {
+          dateInit: date,
+          log: [action],
+          games: {},
+        }
         break
       }
-      case TypeAction.FinishGame: {
-        console.log("FINISH")
-        state.game.isFinished = true
+      case InitGameAction: {
+        const game = createGame()
+        state.games[game.id] = game
         break
       }
-      case TypeAction.PauseGame: {
-        console.log("PAUSE")
-        state.game.isPaused = !state.game.isPaused
+      case StartGameAction: {
+        const { id } = (<StartGameAction>action).payload
+        const game = state.games[id]
+        game.isStarted = true
+        break
+      }
+      case FinishGameAction: {
+        const { id } = (<FinishGameAction>action).payload
+        const game = state.games[id]
+        game.isFinished = true
+        break
+      }
+      case PauseGameAction: {
+        const { id } = (<PauseGameAction>action).payload
+        const game = state.games[id]
+        game.isPaused = !game.isPaused
         break
       }
       default: {
-        console.log("DEFAULT")
+        console.warn("Action not found !")
       }
     }
   }
