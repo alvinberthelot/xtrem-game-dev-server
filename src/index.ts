@@ -1,6 +1,10 @@
 import { createServer } from "@marblejs/core"
 import { IO } from "fp-ts/lib/IO"
 import { listener } from "./http.listener"
+import { scheduler } from "./scheduler/scheduler"
+import Store from "./state/store"
+import { of, combineLatest } from "rxjs"
+import { filter } from "rxjs/operators"
 
 const server = createServer({
   port: 1337,
@@ -8,6 +12,26 @@ const server = createServer({
   listener,
 })
 
-const main: IO<void> = async () => await (await server)()
+const apiServer: IO<void> = async () =>
+  await (await server)()
 
-main()
+apiServer()
+
+const state$ = of(Store.getState())
+const scheduler$ = scheduler()
+
+combineLatest([state$, scheduler$])
+  .pipe(
+    filter(([state, scheduler]) => state.game.isStarted)
+  )
+  .subscribe(
+    (data) => {
+      console.log("DATA", data)
+    },
+    (error) => {
+      console.log("ERROR", error)
+    },
+    () => {
+      console.log("COMPLETE")
+    }
+  )
