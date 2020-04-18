@@ -1,10 +1,25 @@
 import { r } from "@marblejs/core"
-import { mapTo } from "rxjs/operators"
+import { map, flatMap } from "rxjs/operators"
+import {
+  RxHR,
+  RxHttpRequestResponse,
+} from "@akanass/rx-http-request"
 
 export const api$ = r.pipe(
   r.matchPath("/"),
   r.matchType("GET"),
-  r.useEffect((req$) =>
-    req$.pipe(mapTo({ body: "Hello, world!" }))
-  )
+  r.useEffect((req$) => {
+    return req$.pipe(
+      flatMap((v) =>
+        RxHR.get(
+          `https://api.chucknorris.io/jokes/random`,
+          {
+            json: true,
+          }
+        )
+      ),
+      map((data: RxHttpRequestResponse) => data.body.value),
+      map((v) => ({ body: `Chuck says : ${v}` }))
+    )
+  })
 )
