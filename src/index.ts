@@ -22,7 +22,9 @@ const scheduler$ = scheduler()
 
 combineLatest([state$, scheduler$])
   .pipe(
-    filter(([state, scheduler]) => state.game.isStarted)
+    filter(([state, scheduler]) => state.game.isStarted),
+    filter(([state, scheduler]) => !state.game.isPaused),
+    filter(([state, scheduler]) => !state.game.isFinished)
   )
   .subscribe(
     (data) => {
