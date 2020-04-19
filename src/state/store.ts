@@ -10,6 +10,7 @@ import {
 } from "./actions/game.action"
 import { InitStateAction } from "./actions/state.action"
 import { createTeam } from "./helpers/team.helper"
+import { initCustomers } from "./helpers/customer.helper"
 
 export default class Store {
   private static instance: State
@@ -36,7 +37,8 @@ export default class Store {
         break
       }
       case InitGameAction: {
-        const game = createGame()
+        const customers = initCustomers()
+        const game = createGame(customers)
         state.games[game.id] = game
         break
       }

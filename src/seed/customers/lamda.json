@@ -1,0 +1,21 @@
+{
+  "id": "YLtwGHQ4cTgPHzzMnbenZLhJ",
+  "name": "Lambda",
+  "emoticon": "🤓",
+  "jobs": [
+    {
+      "id": "YxPKYQ3hRasqwFUeEjdZZCex",
+      "title": "Addition",
+      "functionalDescription": "I send you 2 numbers and your return the sum.",
+      "score": 3,
+      "penalty": 8,
+      "frequency": 20,
+      "difficulty": 1,
+      "technicalDescription": "The 2 numbers are in the query params, named number1 and number 2, like this : addition?number1=6&number2=9",
+      "specs": [],
+      "endpoint": "addition",
+      "timeToReply": 60,
+      "timeToMarket": 600
+    }
+  ]
+}

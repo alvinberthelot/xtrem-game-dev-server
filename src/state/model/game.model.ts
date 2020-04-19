@@ -1,5 +1,6 @@
 import * as moment from "moment"
 import { Team } from "./team.model"
+import { Customer } from "./customer.model"
 
 export interface Game {
   id: string
@@ -10,5 +11,8 @@ export interface Game {
   dateFinish: moment.Moment
   teams: {
     [id: string]: Team
+  }
+  customers: {
+    [id: string]: Customer
   }
 }

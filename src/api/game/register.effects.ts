@@ -1,5 +1,5 @@
 import { r } from "@marblejs/core"
-import { mapTo, tap, map } from "rxjs/operators"
+import { tap, map } from "rxjs/operators"
 import Store from "../../state/store"
 import { RegisterGameAction } from "../../state/actions/game.action"
 import { PayloadTeam } from "state/model/payload.model"
