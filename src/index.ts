@@ -33,13 +33,13 @@ combineLatest([state$, scheduler$])
         .filter((game) => !game.isPaused)
         .filter((game) => !game.isFinished)
         .forEach((game) => {
-          console.log(`Game #${game.id}`)
+          // console.log(`Game #${JSON.stringify(game)}`)
         })
     })
   )
   .subscribe(
     () => {
-      console.log(".")
+      // console.log(".")
     },
     (error) => {
       console.error("ERROR", error)

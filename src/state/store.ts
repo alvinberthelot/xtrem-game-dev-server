@@ -6,8 +6,10 @@ import {
   StartGameAction,
   FinishGameAction,
   PauseGameAction,
+  RegisterGameAction,
 } from "./actions/game.action"
 import { InitStateAction } from "./actions/state.action"
+import { createTeam } from "./helpers/team.helper"
 
 export default class Store {
   private static instance: State
@@ -54,6 +56,14 @@ export default class Store {
         const { id } = (<PauseGameAction>action).payload
         const game = state.games[id]
         game.isPaused = !game.isPaused
+        break
+      }
+      case RegisterGameAction: {
+        const { payload } = <RegisterGameAction>action
+        console.log("pay", payload)
+        const team = createTeam(payload)
+        const game = state.games[team.gameId]
+        game.teams[team.id] = team
         break
       }
       default: {

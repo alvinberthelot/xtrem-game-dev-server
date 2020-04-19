@@ -1,5 +1,9 @@
 import { Action } from "./action"
-import { Payload, PayloadId } from "../model/payload.model"
+import {
+  Payload,
+  PayloadId,
+  PayloadTeam,
+} from "../model/payload.model"
 
 export class InitStateAction implements Action {
   payload: Payload
@@ -27,6 +31,13 @@ export class FinishGameAction implements Action {
 export class PauseGameAction implements Action {
   payload: PayloadId
   constructor(payload: PayloadId) {
+    this.payload = payload
+  }
+}
+
+export class RegisterGameAction implements Action {
+  payload: PayloadTeam
+  constructor(payload: PayloadTeam) {
     this.payload = payload
   }
 }
