@@ -1,5 +1,9 @@
+export interface QueryParam {
+  name: string
+  value: string
+}
+
 export interface Spec {
-  method: string
-  queryParams?: string[]
-  response: any
+  response: string | object
+  queryParams?: QueryParam[]
 }

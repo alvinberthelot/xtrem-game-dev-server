@@ -1,21 +1,24 @@
 {
   "id": "JjCW2BbXYDEqpFPAUYxcawNc",
-  "name": "Welcome",
+  "name": "Hello",
   "emoticon": "👋",
   "jobs": [
     {
       "id": "XwpzfKDtPgirgigQWusi4HFx",
       "title": "Say hello",
       "functionalDescription": "I say hello so you should do the same.",
-      "score": 0,
+      "score": 1,
       "penalty": 0,
       "frequency": 0,
       "difficulty": 0,
-      "technicalDescription": null,
-      "specs": [
-        "GIVEN our web server WHEN the endpoint /hello is requested by a GET method THEN we should respond 'Hello'"
-      ],
+      "helpDescription": null,
       "endpoint": "hello",
+      "method": "GET",
+      "specs": [
+        {
+          "response": "Hello"
+        }
+      ],
       "timeToReply": 0,
       "timeToMarket": 0
     }

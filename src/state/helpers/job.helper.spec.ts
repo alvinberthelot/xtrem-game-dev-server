@@ -3,6 +3,7 @@ import {
   generateWhenDoc,
   generateThenDoc,
 } from "./job.helper"
+import { Spec, QueryParam } from "../model/spec.model"
 
 describe("GIVEN function generateGivenDoc", () => {
   describe("WHEN called without parameter", () => {
@@ -15,7 +16,7 @@ describe("GIVEN function generateGivenDoc", () => {
 })
 
 describe("GIVEN function generateWhenDoc", () => {
-  describe("WHEN called  with parameter queryParams is not defined", () => {
+  describe("WHEN called with parameter queryParams is not defined", () => {
     test("THEN should return output without queryParams", () => {
       const input = {
         endpoint: "hello",
@@ -27,7 +28,7 @@ describe("GIVEN function generateWhenDoc", () => {
       expect(output).toBe(expected)
     })
   })
-  describe("WHEN called  with parameter queryParams is not defined", () => {
+  describe("WHEN called with parameter queryParams as null", () => {
     test("THEN should return output without queryParams", () => {
       const input = {
         endpoint: "hello",
@@ -42,27 +43,43 @@ describe("GIVEN function generateWhenDoc", () => {
   })
   describe("WHEN called  with parameter queryParams is defined with 1 value", () => {
     test("THEN should return output with queryParams", () => {
+      const queryParams: QueryParam[] = [
+        {
+          name: "number1",
+          value: "23",
+        },
+      ]
       const input = {
         endpoint: "place",
         method: "GET",
-        queryParams: ["country"],
+        queryParams,
       }
       const output = generateWhenDoc(input)
       const expected =
-        "WHEN the endpoint /place is requested by a GET method with query parameter 'country'"
+        "WHEN the endpoint /place is requested by a GET method with query parameter 'number1=23'"
       expect(output).toBe(expected)
     })
   })
   describe("WHEN called  with parameter queryParams is defined with 2 values", () => {
     test("THEN should return output with queryParams", () => {
+      const queryParams: QueryParam[] = [
+        {
+          name: "number1",
+          value: "6",
+        },
+        {
+          name: "number2",
+          value: "9",
+        },
+      ]
       const input = {
         endpoint: "place",
         method: "GET",
-        queryParams: ["country", "town"],
+        queryParams,
       }
       const output = generateWhenDoc(input)
       const expected =
-        "WHEN the endpoint /place is requested by a GET method with query parameters 'country', 'town'"
+        "WHEN the endpoint /place is requested by a GET method with query parameters 'number1=6', 'number2=9'"
       expect(output).toBe(expected)
     })
   })
@@ -71,7 +88,7 @@ describe("GIVEN function generateWhenDoc", () => {
 describe("GIVEN function generateThenDoc", () => {
   describe("WHEN called  with parameter response is defined as string", () => {
     test("THEN should return output with string", () => {
-      const input = {
+      const input: Spec = {
         response: "hello",
       }
       const output = generateThenDoc(input)

@@ -6,14 +6,58 @@
     {
       "id": "YxPKYQ3hRasqwFUeEjdZZCex",
       "title": "Addition",
-      "functionalDescription": "I send you 2 numbers and your return the sum.",
+      "functionalDescription": "I send you numbers (maximum 3) and your server should return the sum.",
       "score": 3,
       "penalty": 8,
       "frequency": 20,
       "difficulty": 1,
-      "technicalDescription": "The 2 numbers are in the query params, named number1 and number 2, like this : addition?number1=6&number2=9",
-      "specs": [],
+      "helpDescription": null,
       "endpoint": "addition",
+      "method": "GET",
+      "specs": [
+        {
+          "response": 0
+        },
+        {
+          "queryParams": [
+            {
+              "name": "number1",
+              "value": 23
+            }
+          ],
+          "response": 23
+        },
+        {
+          "queryParams": [
+            {
+              "name": "number1",
+              "value": 6
+            },
+            {
+              "name": "number2",
+              "value": 9
+            }
+          ],
+          "response": 15
+        },
+        {
+          "queryParams": [
+            {
+              "name": "number1",
+              "value": 5
+            },
+            {
+              "name": "number2",
+              "value": 7
+            },
+            {
+              "name": "number3",
+              "value": 9
+            }
+          ],
+          "response": 21
+        }
+      ],
       "timeToReply": 60,
       "timeToMarket": 600
     }

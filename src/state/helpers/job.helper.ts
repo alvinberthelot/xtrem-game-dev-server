@@ -1,16 +1,39 @@
-import { Spec } from "state/model/spec.model"
+import { Spec, QueryParam } from "state/model/spec.model"
+import { Job, JobClient } from "state/model/job.model"
 
-export function generateDoc(
-  endpoint: string,
+export function mapJobToJobClient(job: Job): JobClient {
+  const jobClient: JobClient = {
+    id: job.id,
+    title: job.title,
+    functionalDescription: job.functionalDescription,
+    score: job.score,
+    penalty: job.penalty,
+    helpDescription: job.helpDescription,
+    specs: job.specs.map((spec) => {
+      return generateSpecDoc({
+        endpoint: job.endpoint,
+        method: job.method,
+        spec,
+      })
+    }),
+    timeToReply: job.timeToReply,
+    timeToMarket: job.timeToMarket,
+  }
+  return jobClient
+}
+
+export function generateSpecDoc(params: {
+  endpoint: string
+  method: string
   spec: Spec
-): string {
+}): string {
   const givenDoc = generateGivenDoc()
   const whenDoc = generateWhenDoc({
-    endpoint,
-    method: spec.method,
-    queryParams: spec.queryParams,
+    endpoint: params.endpoint,
+    method: params.method,
+    queryParams: params.spec.queryParams,
   })
-  const thenDoc = generateThenDoc(spec.response)
+  const thenDoc = generateThenDoc(params.spec)
   return `
   ${givenDoc}
   ${whenDoc}
@@ -25,7 +48,7 @@ export function generateGivenDoc(): string {
 export function generateWhenDoc(params: {
   endpoint: string
   method: string
-  queryParams?: string[]
+  queryParams?: QueryParam[]
 }): string {
   return `WHEN the endpoint /${
     params.endpoint
@@ -36,7 +59,9 @@ export function generateWhenDoc(params: {
         } ${params.queryParams
           .map(
             (param, index) =>
-              `${index > 0 ? ` ` : ``}'${param}'`
+              `${index > 0 ? ` ` : ``}'${param.name}=${
+                param.value
+              }'`
           )
           .join()
           .toString()}`
@@ -44,8 +69,6 @@ export function generateWhenDoc(params: {
   }`
 }
 
-export function generateThenDoc(params: {
-  response: string | object
-}): string {
-  return `THEN you should respond '${params.response.toString()}'`
+export function generateThenDoc(spec: Spec): string {
+  return `THEN you should respond '${spec.response.toString()}'`
 }
