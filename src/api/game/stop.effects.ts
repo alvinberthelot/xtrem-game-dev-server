@@ -2,7 +2,7 @@ import { r } from "@marblejs/core"
 import { mapTo, tap, map } from "rxjs/operators"
 import Store from "../../state/store"
 import { FinishGameAction } from "../../state/actions/game.action"
-import { PayloadId } from "state/model/payload.model"
+import { PayloadId } from "../../state/model/payload.model"
 
 export const stop$ = r.pipe(
   r.matchPath("/game/finish"),

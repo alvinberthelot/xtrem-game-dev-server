@@ -9,8 +9,8 @@ import { InitStateAction } from "./state/actions/state.action"
 import { Payload } from "./state/model/payload.model"
 
 const server = createServer({
-  port: 1337,
-  hostname: "127.0.0.1",
+  port: 8080,
+  hostname: "0.0.0.0",
   listener,
 })
 

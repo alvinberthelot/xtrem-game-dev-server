@@ -6,8 +6,8 @@ import { stop$ } from "./api/game/stop.effects"
 import { pause$ } from "./api/game/pause.effects"
 import { list$ } from "./api/game/list.effects"
 import { register$ } from "./api/game/register.effects"
-import { listCustomer$ } from "api/customer/list.effects"
-import { listJob$ } from "api/job/list.effects"
+import { listCustomer$ } from "./api/customer/list.effects"
+import { listJob$ } from "./api/job/list.effects"
 
 const middlewares = [logger$]
 
