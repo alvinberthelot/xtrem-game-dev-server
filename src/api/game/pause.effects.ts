@@ -4,7 +4,7 @@ import Store from "../../state/store"
 import { PauseGameAction } from "../../state/actions/game.action"
 import { PayloadId } from "../../state/model/payload.model"
 
-export const pause$ = r.pipe(
+export const pauseGame$ = r.pipe(
   r.matchPath("/game/pause"),
   r.matchType("GET"),
   r.useEffect((req$) =>

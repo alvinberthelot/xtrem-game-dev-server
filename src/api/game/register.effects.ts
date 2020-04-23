@@ -4,7 +4,7 @@ import Store from "../../state/store"
 import { RegisterGameAction } from "../../state/actions/game.action"
 import { PayloadTeam } from "../../state/model/payload.model"
 
-export const register$ = r.pipe(
+export const registerGame$ = r.pipe(
   r.matchPath("/game/:gameId/register"),
   r.matchType("GET"),
   r.useEffect((req$) =>

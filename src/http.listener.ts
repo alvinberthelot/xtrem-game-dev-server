@@ -1,12 +1,13 @@
 import { httpListener } from "@marblejs/core"
 import { cors$ } from "@marblejs/middleware-cors"
 import { logger$ } from "./middleware/logger.middleware"
-import { init$ } from "./api/game/init.effects"
-import { start$ } from "./api/game/start.effects"
-import { stop$ } from "./api/game/stop.effects"
-import { pause$ } from "./api/game/pause.effects"
-import { list$ } from "./api/game/list.effects"
-import { register$ } from "./api/game/register.effects"
+import { initGame$ } from "./api/game/init.effects"
+import { startGame$ } from "./api/game/start.effects"
+import { stopGame$ } from "./api/game/stop.effects"
+import { pauseGame$ } from "./api/game/pause.effects"
+import { listGame$ } from "./api/game/list.effects"
+import { singleGame$ } from "./api/game/single.effects"
+import { registerGame$ } from "./api/game/register.effects"
 import { listCustomer$ } from "./api/customer/list.effects"
 import { listJob$ } from "./api/job/list.effects"
 
@@ -22,12 +23,13 @@ const middlewares = [
 ]
 
 const gameEffects = [
-  init$,
-  start$,
-  stop$,
-  pause$,
-  list$,
-  register$,
+  initGame$,
+  startGame$,
+  stopGame$,
+  pauseGame$,
+  listGame$,
+  singleGame$,
+  registerGame$,
 ]
 const customerEffects = [listCustomer$]
 const jobEffects = [listJob$]

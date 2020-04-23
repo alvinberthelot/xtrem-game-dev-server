@@ -2,7 +2,7 @@ import { r } from "@marblejs/core"
 import { map } from "rxjs/operators"
 import Store from "../../state/store"
 
-export const list$ = r.pipe(
+export const listGame$ = r.pipe(
   r.matchPath("/game"),
   r.matchType("GET"),
   r.useEffect((req$) =>
