@@ -10,7 +10,7 @@ import {
 } from "./actions/game.action"
 import { InitStateAction } from "./actions/state.action"
 import { createTeam } from "./helpers/team.helper"
-import { initCustomers } from "./helpers/customer.helper"
+import { initCustomers } from "../seed/customers"
 
 export default class Store {
   private static instance: State
