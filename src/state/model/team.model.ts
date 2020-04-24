@@ -4,7 +4,7 @@ export interface Team {
   name: string
   id: string
   color: string
-  host: string
+  origin: string
   gameId: string
   dateRegister: moment.Moment
 }

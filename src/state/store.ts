@@ -62,7 +62,6 @@ export default class Store {
       }
       case RegisterGameAction: {
         const { payload } = <RegisterGameAction>action
-        console.log("pay", payload)
         const team = createTeam(payload)
         const game = state.games[team.gameId]
         game.teams[team.id] = team

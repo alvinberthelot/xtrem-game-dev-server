@@ -17,17 +17,17 @@ export class PayloadId extends Payload {
 
 export class PayloadTeam extends Payload {
   name: string
-  host: string
+  origin: string
   gameId: string
 
   constructor(params: {
     name: string
-    host: string
+    origin: string
     gameId: string
   }) {
     super()
     this.name = params.name
-    this.host = params.host
+    this.origin = params.origin
     this.gameId = params.gameId
   }
 }

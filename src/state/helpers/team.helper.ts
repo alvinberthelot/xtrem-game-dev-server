@@ -6,7 +6,7 @@ const GAME_ID_TEAM = 7
 
 export function createTeam(params: {
   name: string
-  host: string
+  origin: string
   gameId: string
   date: moment.Moment
 }): Team {
@@ -14,7 +14,7 @@ export function createTeam(params: {
     id: generateRandomString(GAME_ID_TEAM),
     name: params.name,
     color: "#f56565",
-    host: params.host,
+    origin: params.origin,
     gameId: params.gameId,
     dateRegister: params.date,
   }
