@@ -21,7 +21,7 @@ export class StartGameAction implements Action {
   }
 }
 
-export class FinishGameAction implements Action {
+export class StopGameAction implements Action {
   payload: PayloadId
   constructor(payload: PayloadId) {
     this.payload = payload

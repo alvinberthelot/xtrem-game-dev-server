@@ -9,7 +9,7 @@ export const initGame$ = r.pipe(
   r.useEffect((req$) =>
     req$.pipe(
       tap(() => {
-        Store.changeState(new InitGameAction())
+        Store.dispatchAction(new InitGameAction())
       }),
       mapTo({ body: `Game initialized !` })
     )

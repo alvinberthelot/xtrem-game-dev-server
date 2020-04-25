@@ -1,14 +1,18 @@
-import * as moment from "moment"
 import { Team } from "./team.model"
 import { Customer } from "./customer.model"
 
 export interface Game {
   id: string
+  dateInit: number
+  duration: number
+  frequency: number
+  numSteps: number
   isStarted: boolean
-  dateStart: moment.Moment
+  dateStart: number
   isPaused: boolean
-  isFinished: boolean
-  dateFinish: moment.Moment
+  datePause: number
+  isStopped: boolean
+  dateStop: number
   teams: {
     [id: string]: Team
   }

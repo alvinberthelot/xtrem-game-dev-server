@@ -12,7 +12,7 @@ export const startGame$ = r.pipe(
       map((req) => req.params),
       map((params: any) => new PayloadId(params)),
       tap((payload) => {
-        Store.changeState(new StartGameAction(payload))
+        Store.dispatchAction(new StartGameAction(payload))
       }),
       mapTo({ body: `Game started !` })
     )

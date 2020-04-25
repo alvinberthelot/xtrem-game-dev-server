@@ -1,12 +1,11 @@
 import { createServer } from "@marblejs/core"
 import { IO } from "fp-ts/lib/IO"
 import { listener } from "./http.listener"
-import { scheduler } from "./scheduler/scheduler"
 import Store from "./state/store"
-import { of, combineLatest } from "rxjs"
-import { tap } from "rxjs/operators"
+import { tap, map } from "rxjs/operators"
 import { InitStateAction } from "./state/actions/state.action"
 import { Payload } from "./state/model/payload.model"
+import { metronome$ } from "scheduler/metronome"
 
 const server = createServer({
   port: 8080,
@@ -16,39 +15,45 @@ const server = createServer({
 
 const apiServer: IO<void> = async () =>
   await (await server)()
-
 apiServer()
 
-Store.changeState(new InitStateAction(new Payload()))
+const state$ = Store.getState$()
+Store.dispatchAction(new InitStateAction(new Payload()))
 
-const state$ = of(Store.getState())
-const scheduler$ = scheduler()
+const logs$ = state$.pipe(map((state) => state.logs))
+const games$ = state$.pipe(
+  map((state) => Object.values(state.games))
+)
 
-combineLatest([state$, scheduler$])
+// state$.subscribe((data) => {
+//   console.log("state", data)
+// })
+// logs$.subscribe((data) => {
+//   console.log("logs", data)
+// })
+
+const metronomeGameSubscription = {}
+
+games$
   .pipe(
-    tap(([state, scheduler]) => {
-      const games = Object.values(state.games)
-      games
-        .filter((game) => game.isStarted)
-        .filter((game) => !game.isPaused)
-        .filter((game) => !game.isFinished)
-        .forEach((game) => {
-          // console.log(`Game #${JSON.stringify(game)}`)
-        })
+    tap((games) => {
+      games.forEach((game) => {
+        // console.log(game.id)
+        if (metronomeGameSubscription[game.id]) {
+          if (game.isStopped) {
+            metronomeGameSubscription[game.id].unsubscribe()
+          }
+          // if
+        } else {
+          metronomeGameSubscription[game.id] = metronome$(
+            game.id,
+            game.frequency,
+            game.numSteps
+          ).subscribe((data) => {
+            console.log("metronome", data.name, data.step)
+          })
+        }
+      })
     })
   )
-  .subscribe(
-    () => {
-      // console.log(".")
-    },
-    (error) => {
-      console.error("ERROR", error)
-    },
-    () => {
-      console.log(`
-        -_-_-_-_-_-_-_-_-_-_-_-_
-        COMPLETE !
-        -_-_-_-_-_-_-_-_-_-_-_-_
-      `)
-    }
-  )
+  .subscribe()

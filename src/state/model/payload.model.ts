@@ -1,9 +1,9 @@
 import * as moment from "moment"
 
 export class Payload {
-  date: moment.Moment
+  date: number
   constructor() {
-    this.date = moment()
+    this.date = moment().valueOf()
   }
 }
 

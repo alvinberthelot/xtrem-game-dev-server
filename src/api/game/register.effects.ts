@@ -29,7 +29,9 @@ export const registerGame$ = r.pipe(
             origin,
             gameId,
           })
-          Store.changeState(new RegisterGameAction(payload))
+          Store.dispatchAction(
+            new RegisterGameAction(payload)
+          )
         } else {
           throw new HttpError(
             `Client ${origin} already registered to the game ${gameId}`,
