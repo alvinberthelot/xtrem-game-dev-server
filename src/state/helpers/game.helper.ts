@@ -1,21 +1,24 @@
-import * as moment from "moment"
 import { Game } from "../model/game.model"
-import { generateRandomString } from "./utils.helper"
 import { Customer } from "state/model/customer.model"
+import { BehaviorSubject } from "rxjs"
 
-const GAME_ID_LENGTH = 7
-
-export function createGame(
-  customers: Customer[],
-  duration: number,
-  frequency: number
-): Game {
+export function initGame(params: {
+  id: string
+  date: number
+  customers: Customer[]
+  duration: number
+  periodBetweenStep: number
+}): Game {
+  const numSteps =
+    Math.round(params.duration / params.periodBetweenStep) +
+    1
   const game: Game = {
-    id: generateRandomString(GAME_ID_LENGTH),
-    dateInit: moment().valueOf(),
-    duration,
-    frequency,
-    numSteps: Math.round(duration / frequency) + 1,
+    id: params.id,
+    dateLastChange: params.date,
+    dateInit: params.date,
+    duration: params.duration,
+    periodBetweenStep: params.periodBetweenStep,
+    numSteps,
     isStarted: false,
     dateStart: null,
     isPaused: false,
@@ -23,10 +26,16 @@ export function createGame(
     isStopped: false,
     dateStop: null,
     teams: {},
-    customers: customers.reduce((acc, customer) => {
+    customers: params.customers.reduce((acc, customer) => {
       acc[customer.id] = customer
       return acc
     }, {}),
+    gameInitialized$: null,
+    timerInit$$: null,
+    timerStart$$: null,
+    isStarted$: new BehaviorSubject(false),
+    isPaused$: new BehaviorSubject(false),
+    isStopped$: new BehaviorSubject(false),
   }
   return game
 }

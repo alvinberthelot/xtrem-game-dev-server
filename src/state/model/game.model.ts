@@ -1,11 +1,13 @@
 import { Team } from "./team.model"
 import { Customer } from "./customer.model"
+import { Observable, BehaviorSubject } from "rxjs"
 
 export interface Game {
   id: string
+  dateLastChange: number
   dateInit: number
   duration: number
-  frequency: number
+  periodBetweenStep: number
   numSteps: number
   isStarted: boolean
   dateStart: number
@@ -19,4 +21,10 @@ export interface Game {
   customers: {
     [id: string]: Customer
   }
+  gameInitialized$: Observable<any>
+  timerInit$$: Observable<number>
+  timerStart$$: Observable<number>
+  isStarted$: BehaviorSubject<boolean>
+  isPaused$: BehaviorSubject<boolean>
+  isStopped$: BehaviorSubject<boolean>
 }

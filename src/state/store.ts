@@ -1,5 +1,7 @@
+import * as moment from "moment"
+import * as chalk from "chalk"
 import { State } from "./model/state.model"
-import { createGame } from "./helpers/game.helper"
+import { initGame } from "./helpers/game.helper"
 import { Action } from "./actions/action"
 import {
   InitGameAction,
@@ -11,11 +13,24 @@ import {
 import { InitStateAction } from "./actions/state.action"
 import { createTeam } from "./helpers/team.helper"
 import { initCustomers } from "../seed/customers"
-import { BehaviorSubject } from "rxjs"
+import { BehaviorSubject, of, timer, race } from "rxjs"
 import {
-  DURATION_10S,
-  DURATION_5S,
-} from "scheduler/metronome"
+  SECOND,
+  DAY,
+  createSmartTimer$,
+  HOUR,
+} from "../scheduler/metronome"
+import { generateRandomString } from "./helpers/utils.helper"
+import {
+  tap,
+  share,
+  filter,
+  map,
+  switchMapTo,
+} from "rxjs/operators"
+import { getTeamStatus } from "../effects/status.effect"
+
+const GAME_ID_LENGTH = 7
 
 export default class Store {
   private static instance$: BehaviorSubject<State>
@@ -50,103 +65,161 @@ export default class Store {
       }
       case InitGameAction: {
         const customers = initCustomers()
-        const game = createGame(
+
+        const id = generateRandomString(GAME_ID_LENGTH)
+        const now = moment().valueOf()
+
+        const game = initGame({
+          id,
+          date: now,
           customers,
-          DURATION_10S,
-          DURATION_5S
-        )
-        newState = {
-          ...state,
-          games: { ...state.games, [game.id]: game },
-          logs: { ...state.logs, [game.id]: [action] },
-        }
+          duration: 3 * HOUR,
+          periodBetweenStep: 5 * SECOND,
+        })
+
+        const timerGameInitialized$$ = createSmartTimer$({
+          timer$: timer(0, game.periodBetweenStep),
+          toStart$: of(true),
+          toStop$: race(
+            game.isStopped$.pipe(filter((v) => v)),
+            timer(2 * DAY)
+          ),
+        }).pipe(share())
+        game.timerInit$$ = timerGameInitialized$$
+
+        timerGameInitialized$$
+          .pipe(
+            map((step) => ({
+              description: `Game ${chalk.magenta(
+                id
+              )} - Init`,
+              step,
+            })),
+            tap(({ description, step }) => {
+              console.log(description, step)
+            })
+          )
+          .subscribe()
+
+        const timerGameStarted$$ = createSmartTimer$({
+          timer$: game.timerInit$$,
+          toStart$: game.isStarted$.pipe(filter((v) => v)),
+          toStop$: race(
+            game.isStopped$.pipe(filter((v) => v))
+          ),
+        }).pipe(share())
+        game.timerStart$$ = timerGameStarted$$
+
+        timerGameStarted$$
+          .pipe(
+            map((step) => ({
+              description: `Game ${chalk.magenta(
+                id
+              )} - Start`,
+              step,
+            })),
+            tap(({ description, step }) => {
+              console.log(description, step)
+            })
+          )
+          .subscribe()
+
+        // game
+        state.games[game.id] = game
+        // logs
+        state.logs[game.id] = [action]
         break
       }
       case StartGameAction: {
         const { date, id } = (<StartGameAction>(
           action
         )).payload
+        // game
         const game = state.games[id]
-        const logs = state.logs[id]
-        newState = {
-          ...state,
-          games: {
-            ...state.games,
-            [id]: {
-              ...game,
-              isStarted: true,
-              dateStart: date,
-            },
-          },
-          logs: { ...state.logs, [id]: [...logs, action] },
-        }
+        game.dateLastChange = date
+        game.isStarted$.next(true)
+        game.isStarted = true
+        game.dateStart = date
+        //
+        game.isStarted$
+          .pipe(switchMapTo(timer(game.duration)))
+          .subscribe(() => {
+            game.isStopped$.next(true)
+          })
+        // logs
+        state.logs[id].push(action)
         break
       }
       case StopGameAction: {
         const { date, id } = (<StopGameAction>(
           action
         )).payload
+        // game
         const game = state.games[id]
-        const logs = state.logs[id]
-        newState = {
-          ...state,
-          games: {
-            ...state.games,
-            [id]: {
-              ...game,
-              isStopped: true,
-              dateStop: date,
-            },
-          },
-          logs: { ...state.logs, [id]: [...logs, action] },
-        }
+        game.dateLastChange = date
+        game.isStopped$.next(true)
+        game.isStopped = true
+        game.dateStop = date
+        // logs
+        state.logs[id].push(action)
         break
       }
       case PauseGameAction: {
         const { date, id } = (<PauseGameAction>(
           action
         )).payload
+        // game
         const game = state.games[id]
-        const logs = state.logs[id]
-        newState = {
-          ...state,
-          games: {
-            ...state.games,
-            [id]: {
-              ...game,
-              isPaused: !game.isPaused,
-              datePause: date,
-            },
-          },
-          logs: { ...state.logs, [id]: [...logs, action] },
-        }
+        game.dateLastChange = date
+        game.isPaused = !game.isPaused
+        game.datePause = date
+        // logs
+        state.logs[id].push(action)
         break
       }
       case RegisterGameAction: {
         const { payload } = <RegisterGameAction>action
+        const { date } = payload
         const team = createTeam(payload)
+        // game
         const game = state.games[team.gameId]
-        const logs = state.logs[team.gameId]
-        newState = {
-          ...state,
-          games: {
-            ...state.games,
-            [game.id]: {
-              ...game,
-              teams: { ...game.teams, [team.id]: team },
-            },
-          },
-          logs: {
-            ...state.logs,
-            [game.id]: [...logs, action],
-          },
-        }
+        game.dateLastChange = date
+        game.teams[team.id] = team
+        // logs
+        state.logs[team.gameId].push(action)
+
+        const timerTeamRegistered$ = createSmartTimer$({
+          timer$: game.timerStart$$,
+          toStart$: game.isStarted$.pipe(filter((v) => v)),
+          toStop$: game.isStopped$.pipe(filter((v) => v)),
+        })
+
+        timerTeamRegistered$
+          .pipe(
+            tap(() => {
+              try {
+                getTeamStatus(game, team)
+              } catch (error) {
+                console.log("ERROR", error)
+              }
+            }),
+            map((step) => ({
+              description: `Game ${chalk.magenta(
+                game.id
+              )} - Team ${chalk.blue(team.id)} - Register`,
+              step,
+            })),
+            tap(({ description, step }) => {
+              console.log(description, step)
+            })
+          )
+          .subscribe()
         break
       }
       default: {
         console.warn("Action not found !")
       }
     }
-    Store.getState$().next(newState)
+    Store.getState$().next(state)
   }
 }

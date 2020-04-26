@@ -2,10 +2,10 @@ import { createServer } from "@marblejs/core"
 import { IO } from "fp-ts/lib/IO"
 import { listener } from "./http.listener"
 import Store from "./state/store"
-import { tap, map } from "rxjs/operators"
+import { map, filter, scan } from "rxjs/operators"
 import { InitStateAction } from "./state/actions/state.action"
 import { Payload } from "./state/model/payload.model"
-import { metronome$ } from "scheduler/metronome"
+import { split } from "./state/helpers/function.helper"
 
 const server = createServer({
   port: 8080,
@@ -21,39 +21,83 @@ const state$ = Store.getState$()
 Store.dispatchAction(new InitStateAction(new Payload()))
 
 const logs$ = state$.pipe(map((state) => state.logs))
-const games$ = state$.pipe(
-  map((state) => Object.values(state.games))
+
+const gamesKV$ = state$.pipe(map((state) => state.games))
+
+gamesKV$.subscribe((games) => {
+  // console.log("games", games)
+})
+
+const gamesSplitted$ = gamesKV$.pipe(
+  scan(
+    (acc, games) => {
+      const memory = {
+        ...acc.gamesAddedKV,
+        ...acc.gamesChangedKV,
+        ...acc.gamesUnchangedKV,
+      }
+
+      const [gamesAlreadyKnown, gamesAdded] = split({
+        values: Object.values(games),
+        predicate: (game) => memory[game.id],
+      })
+
+      const gamesAddedKV = gamesAdded.reduce(
+        (accAdded, game) => ({
+          ...accAdded,
+          [game.id]: game.dateLastChange,
+        }),
+        {}
+      )
+
+      const [gamesChanged, gamesUnchanged] = split({
+        values: gamesAlreadyKnown,
+        predicate: (game) =>
+          game.dateLastChange > memory[game.id],
+      })
+
+      const gamesChangedKV = gamesChanged.reduce(
+        (accAdded, game) => ({
+          ...accAdded,
+          [game.id]: game.dateLastChange,
+        }),
+        {}
+      )
+      const gamesUnchangedKV = gamesUnchanged.reduce(
+        (accAdded, game) => ({
+          ...accAdded,
+          [game.id]: game.dateLastChange,
+        }),
+        {}
+      )
+
+      return {
+        gamesAddedKV,
+        gamesChangedKV,
+        gamesUnchangedKV,
+      }
+    },
+    {
+      gamesAddedKV: {},
+      gamesChangedKV: {},
+      gamesUnchangedKV: {},
+    }
+  )
 )
 
-// state$.subscribe((data) => {
-//   console.log("state", data)
-// })
-// logs$.subscribe((data) => {
-//   console.log("logs", data)
-// })
+const gamesAddedKV$ = gamesSplitted$.pipe(
+  map((gamesSplitted) => gamesSplitted.gamesAddedKV),
+  filter((gamesKV) => Object.values(gamesKV).length > 0)
+)
+const gamesChangedKV$ = gamesSplitted$.pipe(
+  map((gamesSplitted) => gamesSplitted.gamesChangedKV),
+  filter((gamesKV) => Object.values(gamesKV).length > 0)
+)
 
-const metronomeGameSubscription = {}
+gamesAddedKV$.subscribe((data) => {
+  console.log("gamesAddedKV$", data)
+})
 
-games$
-  .pipe(
-    tap((games) => {
-      games.forEach((game) => {
-        // console.log(game.id)
-        if (metronomeGameSubscription[game.id]) {
-          if (game.isStopped) {
-            metronomeGameSubscription[game.id].unsubscribe()
-          }
-          // if
-        } else {
-          metronomeGameSubscription[game.id] = metronome$(
-            game.id,
-            game.frequency,
-            game.numSteps
-          ).subscribe((data) => {
-            console.log("metronome", data.name, data.step)
-          })
-        }
-      })
-    })
-  )
-  .subscribe()
+gamesChangedKV$.subscribe((data) => {
+  console.log("gamesChangedKV$", data)
+})
