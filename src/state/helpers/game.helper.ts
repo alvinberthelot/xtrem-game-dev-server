@@ -1,4 +1,4 @@
-import { Game } from "../model/game.model"
+import { Game, GameClient } from "../model/game.model"
 import { Customer } from "state/model/customer.model"
 import { BehaviorSubject } from "rxjs"
 
@@ -38,4 +38,16 @@ export function initGame(params: {
     isStopped$: new BehaviorSubject(false),
   }
   return game
+}
+
+export function mapGameClient(game: Game): GameClient {
+  const gameClient: GameClient = {
+    id: game.id,
+    duration: game.duration,
+    isStarted: game.isStarted,
+    isPaused: game.isPaused,
+    isStopped: game.isStopped,
+    teams: game.teams,
+  }
+  return gameClient
 }

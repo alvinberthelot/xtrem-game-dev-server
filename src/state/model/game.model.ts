@@ -28,3 +28,14 @@ export interface Game {
   isPaused$: BehaviorSubject<boolean>
   isStopped$: BehaviorSubject<boolean>
 }
+
+export interface GameClient {
+  id: string
+  duration: number
+  isStarted: boolean
+  isPaused: boolean
+  isStopped: boolean
+  teams: {
+    [id: string]: Team
+  }
+}

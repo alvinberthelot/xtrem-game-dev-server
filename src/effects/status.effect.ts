@@ -7,9 +7,6 @@ import { Game } from "../state/model/game.model"
 
 export function getTeamStatus(game: Game, team: Team) {
   const request = `${team.origin}status`
-
-  console.log(`REQUEST`, request)
-
   race(timer(4 * SECOND), RxHR.get(request)).subscribe(
     (data: any) => {
       if (
