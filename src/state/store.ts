@@ -1,5 +1,6 @@
 import * as moment from "moment"
 import * as chalk from "chalk"
+import { sortBy, random } from "lodash"
 import { State } from "./model/state.model"
 import { initGame } from "./helpers/game.helper"
 import { Action } from "./actions/action"
@@ -9,6 +10,7 @@ import {
   StopGameAction,
   PauseGameAction,
   RegisterGameAction,
+  AddStepGameAction,
 } from "./actions/game.action"
 import { InitStateAction } from "./actions/state.action"
 import { createTeam } from "./helpers/team.helper"
@@ -29,6 +31,8 @@ import {
   switchMapTo,
 } from "rxjs/operators"
 import { getTeamStatus } from "../effects/status.effect"
+import { Step, Score } from "./model/step.model"
+import { PayloadId } from "./model/payload.model"
 
 const GAME_ID_LENGTH = 7
 
@@ -119,7 +123,11 @@ export default class Store {
               step,
             })),
             tap(({ description, step }) => {
-              console.log(description, step)
+              console.log(description, step, `Add a step`)
+              const payload = new PayloadId({ id })
+              Store.dispatchAction(
+                new AddStepGameAction(payload)
+              )
             })
           )
           .subscribe()
@@ -214,6 +222,31 @@ export default class Store {
             })
           )
           .subscribe()
+        break
+      }
+      case AddStepGameAction: {
+        const { payload } = <AddStepGameAction>action
+        const { date, id } = payload
+        // game
+        const game = state.games[id]
+        const teams = game.teams
+        const scores = Object.keys(teams).map((id) => ({
+          teamId: id,
+          score: random(100),
+        }))
+        const scoresSorted: Score[] = sortBy(
+          scores,
+          (v) => v.score
+        )
+          .reverse()
+          .map((v, index) => ({ ...v, rank: index }))
+        const step: Step = {
+          id: generateRandomString(10),
+          date,
+          index: game.steps.length + 1,
+          scores: scoresSorted,
+        }
+        game.steps.push(step)
         break
       }
       default: {

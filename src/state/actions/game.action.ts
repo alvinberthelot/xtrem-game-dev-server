@@ -41,3 +41,10 @@ export class RegisterGameAction implements Action {
     this.payload = payload
   }
 }
+
+export class AddStepGameAction implements Action {
+  payload: PayloadId
+  constructor(payload: PayloadId) {
+    this.payload = payload
+  }
+}

@@ -26,6 +26,7 @@ export function initGame(params: {
     isStopped: false,
     dateStop: null,
     teams: {},
+    steps: [],
     customers: params.customers.reduce((acc, customer) => {
       acc[customer.id] = customer
       return acc
@@ -45,9 +46,13 @@ export function mapGameClient(game: Game): GameClient {
     id: game.id,
     duration: game.duration,
     isStarted: game.isStarted,
+    dateStart: game.dateStart,
     isPaused: game.isPaused,
+    datePause: game.datePause,
     isStopped: game.isStopped,
+    dateStop: game.dateStop,
     teams: game.teams,
+    steps: game.steps,
   }
   return gameClient
 }
