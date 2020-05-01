@@ -40,8 +40,4 @@ export interface GameClient {
   datePause: number
   isStopped: boolean
   dateStop: number
-  teams: {
-    [id: string]: Team
-  }
-  steps: Step[]
 }

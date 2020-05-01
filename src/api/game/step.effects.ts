@@ -4,8 +4,8 @@ import Store from "../../state/store"
 import { mapToGetParams } from "../helpers/api.helper"
 import { Game } from "../../state/model/game.model"
 
-export const listTeamAssociatedToGame$ = r.pipe(
-  r.matchPath("/game/:gameId/team"),
+export const listStepAssociatedToGame$ = r.pipe(
+  r.matchPath("/game/:gameId/step"),
   r.matchType("GET"),
   r.useEffect((req$) =>
     req$.pipe(
@@ -18,10 +18,10 @@ export const listTeamAssociatedToGame$ = r.pipe(
             HttpStatus.NOT_FOUND
           )
         }
-        return Object.values(game.teams)
+        return game.steps
       }),
-      map((teams) => ({
-        body: teams,
+      map((steps) => ({
+        body: steps,
       }))
     )
   )

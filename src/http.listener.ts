@@ -10,7 +10,9 @@ import { singleGame$ } from "./api/game/single.effects"
 import { registerGame$ } from "./api/game/register.effects"
 import { listCustomer$ } from "./api/customer/list.effects"
 import { listJob$ } from "./api/job/list.effects"
-import { myTeamGame$ } from "./api/game/team.effects"
+import { meAssociatedToGame$ } from "./api/game/me.effects"
+import { listTeamAssociatedToGame$ } from "./api/game/team.effects"
+import { listStepAssociatedToGame$ } from "./api/game/step.effects"
 
 const middlewares = [
   logger$,
@@ -31,7 +33,9 @@ const gameEffects = [
   listGame$,
   singleGame$,
   registerGame$,
-  myTeamGame$,
+  meAssociatedToGame$,
+  listTeamAssociatedToGame$,
+  listStepAssociatedToGame$,
 ]
 const customerEffects = [listCustomer$]
 const jobEffects = [listJob$]

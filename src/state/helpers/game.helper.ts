@@ -51,8 +51,6 @@ export function mapGameClient(game: Game): GameClient {
     datePause: game.datePause,
     isStopped: game.isStopped,
     dateStop: game.dateStop,
-    teams: game.teams,
-    steps: game.steps,
   }
   return gameClient
 }

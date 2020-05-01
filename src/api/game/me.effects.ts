@@ -3,14 +3,15 @@ import { map } from "rxjs/operators"
 import Store from "../../state/store"
 import { mapToGetParams } from "../helpers/api.helper"
 import { Game } from "../../state/model/game.model"
+import { Team } from "../../state/model/team.model"
 
-export const listTeamAssociatedToGame$ = r.pipe(
-  r.matchPath("/game/:gameId/team"),
+export const meAssociatedToGame$ = r.pipe(
+  r.matchPath("/game/:gameId/me"),
   r.matchType("GET"),
   r.useEffect((req$) =>
     req$.pipe(
       map(mapToGetParams),
-      map(({ gameId }) => {
+      map(({ gameId, origin }) => {
         const game: Game = Store.getState().games[gameId]
         if (!game) {
           throw new HttpError(
@@ -18,10 +19,17 @@ export const listTeamAssociatedToGame$ = r.pipe(
             HttpStatus.NOT_FOUND
           )
         }
-        return Object.values(game.teams)
+        let team: Team = null
+        const teamsWithSameOrigin = Object.values(
+          game.teams
+        ).filter((team) => team.origin === origin)
+        if (teamsWithSameOrigin.length > 0) {
+          team = teamsWithSameOrigin[0]
+        }
+        return team
       }),
-      map((teams) => ({
-        body: teams,
+      map((team) => ({
+        body: { team },
       }))
     )
   )
