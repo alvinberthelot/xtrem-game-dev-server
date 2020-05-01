@@ -22,7 +22,10 @@ import {
   createSmartTimer$,
   HOUR,
 } from "../scheduler/metronome"
-import { generateRandomString } from "./helpers/utils.helper"
+import {
+  generateRandomString,
+  getColor,
+} from "./helpers/utils.helper"
 import {
   tap,
   share,
@@ -187,10 +190,12 @@ export default class Store {
       }
       case RegisterGameAction: {
         const { payload } = <RegisterGameAction>action
-        const { date } = payload
-        const team = createTeam(payload)
-        // game
-        const game = state.games[team.gameId]
+        const { date, gameId } = payload
+        const game = state.games[gameId]
+        const color = getColor(
+          Object.values(game.teams).length
+        )
+        const team = createTeam({ ...payload, color })
         game.dateLastChange = date
         game.teams[team.id] = team
         // logs
