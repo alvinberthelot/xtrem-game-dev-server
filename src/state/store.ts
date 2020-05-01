@@ -244,7 +244,7 @@ export default class Store {
           (v) => v.score
         )
           .reverse()
-          .map((v, index) => ({ ...v, rank: index }))
+          .map((v, index) => ({ ...v, rank: index + 1 }))
         const step: Step = {
           id: generateRandomString(10),
           date,
