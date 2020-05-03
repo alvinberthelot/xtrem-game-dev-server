@@ -4,7 +4,7 @@ import { listener } from "./http.listener"
 import Store from "./state/store"
 import { map, filter, scan } from "rxjs/operators"
 import { InitStateAction } from "./state/actions/state.action"
-import { InitGameAction } from "state/actions/game.action"
+import { InitGameAction } from "./state/actions/game.action"
 import { Payload } from "./state/model/payload.model"
 import { split } from "./state/helpers/function.helper"
 

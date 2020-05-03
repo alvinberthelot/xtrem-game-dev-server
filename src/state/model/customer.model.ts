@@ -8,3 +8,9 @@ export interface Customer {
     [id: string]: Job
   }
 }
+
+export interface CustomerClient {
+  id: string
+  name: string
+  emoticon: string
+}
