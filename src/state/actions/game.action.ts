@@ -12,7 +12,12 @@ export class InitStateAction implements Action {
   }
 }
 
-export class InitGameAction implements Action {}
+export class InitGameAction implements Action {
+  payload: Payload
+  constructor(payload: Payload) {
+    this.payload = payload
+  }
+}
 
 export class StartGameAction implements Action {
   payload: PayloadId
